@@ -9,9 +9,9 @@ Sistema de Aluguel de Carros desenvolvido em Java/Spring Boot com arquitetura MV
 
 * Luiz Fernando Batista Moreira
 
-# Professor Responsável: João Paulo Carneiro Aramuni
+Professor Responsável: João Paulo Carneiro Aramuni
 
-# Instituição: PUC Minas - Laboratório de Engenharia de Software
+Instituição: PUC Minas - Laboratório de Engenharia de Software
 
 # 📋 Histórias de Usuário - Sistema de Aluguel de Carros
 
