@@ -102,7 +102,7 @@ public class ClienteService {
 
     @Transactional
     public List<ClienteResponseDTO> listarTodos() {
-        return clienteRepository.findAll()
+        return clienteRepository.findAllWithDetails()
                 .stream()
                 .map(ClienteResponseDTO::from)
                 .toList();
@@ -112,7 +112,7 @@ public class ClienteService {
 
     @Transactional
     public ClienteResponseDTO buscarPorId(Long id) {
-        Cliente cliente = clienteRepository.findById(id)
+        Cliente cliente = clienteRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new NoSuchElementException("Cliente não encontrado: id=" + id));
         return ClienteResponseDTO.from(cliente);
     }
@@ -125,7 +125,7 @@ public class ClienteService {
      */
     @Transactional
     public ClienteResponseDTO atualizarDados(Long id, ClienteRequestDTO dto) {
-        Cliente cliente = clienteRepository.findById(id)
+        Cliente cliente = clienteRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new NoSuchElementException("Cliente não encontrado: id=" + id));
 
         cliente.setNome(dto.getNome());
@@ -173,9 +173,8 @@ public class ClienteService {
      */
     @Transactional
     public void excluirCadastro(Long id) {
-        if (!clienteRepository.existsById(id)) {
-            throw new NoSuchElementException("Cliente não encontrado: id=" + id);
-        }
-        clienteRepository.deleteById(id);
+        Cliente cliente = clienteRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new NoSuchElementException("Cliente não encontrado: id=" + id));
+        clienteRepository.delete(cliente);
     }
 }

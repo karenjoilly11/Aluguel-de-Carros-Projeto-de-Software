@@ -2,8 +2,10 @@ package br.puc.aluguelcarros.repository;
 
 import br.puc.aluguelcarros.model.Cliente;
 import io.micronaut.data.annotation.Repository;
+import io.micronaut.data.annotation.Query;
 import io.micronaut.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -43,4 +45,25 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
      * Verifica unicidade de RG.
      */
     boolean existsByRg(String rg);
+
+    /**
+     * Busca cliente por ID fazendo JOIN FETCH nos rendimentos e suas empregadoras.
+     * Apenas uma coleção por JOIN FETCH para evitar MultipleBagFetchException.
+     * As entidadesEmpregadoras são carregadas via segundo JOIN FETCH em query separada
+     * ou acessadas pela referência já presente nos rendimentos.
+     */
+    @Query("SELECT DISTINCT c FROM Cliente c " +
+           "LEFT JOIN FETCH c.rendimentos r " +
+           "LEFT JOIN FETCH r.entidadeEmpregadora " +
+           "WHERE c.id = :id")
+    Optional<Cliente> findByIdWithDetails(Long id);
+
+    /**
+     * Busca todos os clientes com JOIN FETCH nos rendimentos.
+     * Apenas uma coleção por JOIN FETCH para evitar MultipleBagFetchException.
+     */
+    @Query("SELECT DISTINCT c FROM Cliente c " +
+           "LEFT JOIN FETCH c.rendimentos r " +
+           "LEFT JOIN FETCH r.entidadeEmpregadora")
+    List<Cliente> findAllWithDetails();
 }
