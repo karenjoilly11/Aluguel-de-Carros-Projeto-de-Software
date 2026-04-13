@@ -5,8 +5,7 @@ const NAV_LINKS = [
   { label: 'Sobre', href: '#sobre' },
   { label: 'Serviços', href: '#servicos' },
   { label: 'Frota', href: '#frota' },
-  { label: 'Clientes', href: '#sistema' },
-  { label: 'Reservar', href: '#reservar' },
+  { label: 'Contato', href: '#reservar' },
 ];
 
 export default function Navbar() {
@@ -27,32 +26,23 @@ export default function Navbar() {
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="navbar-inner">
-        {/* Logo */}
         <a href="#hero" className="navbar-logo">
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-            <path d="M2 14l4-8 3 5 3-3 3 6H2z" fill="#2B4CFF"/>
-            <circle cx="17" cy="6" r="3" fill="#2B4CFF" opacity="0.6"/>
-          </svg>
+          <span className="navbar-logo-mark">DE</span>
           <span>DriveElite</span>
         </a>
 
-        {/* Links desktop */}
         <ul className="navbar-links">
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
-              <a href={link.href} className="navbar-link">
-                {link.label}
-              </a>
+              <a href={link.href} className="navbar-link">{link.label}</a>
             </li>
           ))}
         </ul>
 
-        {/* CTA desktop */}
-        <a href="#reservar" className="navbar-cta">
-          Reservar
+        <a href="/login" className="navbar-cta">
+          Entrar
         </a>
 
-        {/* Hamburguer mobile */}
         <button
           className={`navbar-hamburger${menuOpen ? ' open' : ''}`}
           onClick={() => setMenuOpen(!menuOpen)}
@@ -62,7 +52,6 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Menu mobile */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -82,6 +71,9 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
+            <a href="/login" className="navbar-mobile-link" onClick={() => setMenuOpen(false)}>
+              Entrar
+            </a>
           </motion.div>
         )}
       </AnimatePresence>

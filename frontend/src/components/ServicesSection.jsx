@@ -136,12 +136,7 @@ function ServiceCard({ service, index, isActive, onClick }) {
                 <p className="service-card-desc">{service.desc}</p>
                 <ul className="service-card-details">
                   {service.details.map((d) => (
-                    <li key={d}>
-                      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-                        <path d="M2 6.5l3 3 6-6" stroke="#2B4CFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      {d}
-                    </li>
+                    <li key={d}>{d}</li>
                   ))}
                 </ul>
                 <span className="service-card-price">{service.price}</span>
@@ -161,8 +156,6 @@ export default function ServicesSection() {
 
   return (
     <section className="services-section" id="servicos">
-      {/* Grid de fundo */}
-      <div className="services-bg-grid" aria-hidden="true" />
 
       <div className="section-container">
         {/* Header */}

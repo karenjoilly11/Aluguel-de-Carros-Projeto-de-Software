@@ -6,6 +6,8 @@ import br.puc.aluguelcarros.service.ClienteService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.annotation.*;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 
@@ -35,6 +37,7 @@ import java.util.NoSuchElementException;
  * Em produção, extraia para uma classe @Error ou @ServerExceptionHandler.
  */
 @Controller("/clientes")
+@Secured(SecurityRule.IS_AUTHENTICATED)
 public class ClienteController {
 
     private final ClienteService clienteService;

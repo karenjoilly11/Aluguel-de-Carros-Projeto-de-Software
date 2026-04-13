@@ -11,12 +11,13 @@ export default defineConfig({
         target: 'http://localhost:8082',
         changeOrigin: true,
       },
-      // /sistema redireciona para o front legado do Micronaut
-      '/sistema': {
+      '/auth': {
         target: 'http://localhost:8082',
         changeOrigin: true,
-        rewrite: () => '/',
       },
     },
+  },
+  build: {
+    chunkSizeWarningLimit: 1600, // Silencia avisos inofensivos para a lib pesada de 3D
   },
 })

@@ -2,24 +2,27 @@ import { useState, useEffect, useCallback } from 'react';
 
 const BASE = '/clientes';
 
-async function apiFetch(path, options = {}) {
-  const res = await fetch(`${BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+function apiFetch(path, token, options = {}) {
+  return fetch(`${BASE}${path}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     ...options,
+  }).then(async (res) => {
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      const err = new Error(body || `HTTP ${res.status}`);
+      err.status = res.status;
+      throw err;
+    }
+    if (res.status === 204) return null;
+    return res.json();
   });
-  if (!res.ok) {
-    const body = await res.text().catch(() => '');
-    const err = new Error(body || `HTTP ${res.status}`);
-    err.status = res.status;
-    throw err;
-  }
-  // 204 No Content
-  if (res.status === 204) return null;
-  return res.json();
 }
 
-// ── Hook principal ────────────────────────────────────────────────────────────
-export function useClientes() {
+export function useClientes(token) {
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState(null);
@@ -29,7 +32,7 @@ export function useClientes() {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiFetch('');
+      const data = await apiFetch('', token);
       setClientes(data);
       setOnline(true);
     } catch (e) {
@@ -38,30 +41,30 @@ export function useClientes() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => { carregar(); }, [carregar]);
 
   const cadastrar = useCallback(async (dto) => {
-    const novo = await apiFetch('', { method: 'POST', body: JSON.stringify(dto) });
+    const novo = await apiFetch('', token, { method: 'POST', body: JSON.stringify(dto) });
     setClientes((prev) => [...prev, novo]);
     return novo;
-  }, []);
+  }, [token]);
 
   const atualizar = useCallback(async (id, dto) => {
-    const atualizado = await apiFetch(`/${id}`, { method: 'PUT', body: JSON.stringify(dto) });
+    const atualizado = await apiFetch(`/${id}`, token, { method: 'PUT', body: JSON.stringify(dto) });
     setClientes((prev) => prev.map((c) => (c.id === id ? atualizado : c)));
     return atualizado;
-  }, []);
+  }, [token]);
 
   const excluir = useCallback(async (id) => {
-    await apiFetch(`/${id}`, { method: 'DELETE' });
+    await apiFetch(`/${id}`, token, { method: 'DELETE' });
     setClientes((prev) => prev.filter((c) => c.id !== id));
-  }, []);
+  }, [token]);
 
   const buscarPorId = useCallback(async (id) => {
-    return apiFetch(`/${id}`);
-  }, []);
+    return apiFetch(`/${id}`, token);
+  }, [token]);
 
   return { clientes, loading, error, online, carregar, cadastrar, atualizar, excluir, buscarPorId };
 }

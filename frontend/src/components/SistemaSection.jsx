@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useClientes } from '../hooks/useClientes';
+import { useAuth } from '../context/AuthContext';
 import ClienteModal from './ClienteModal';
 
 // ── Formata CPF para exibição ─────────────────────────────────────────────────
@@ -127,7 +128,8 @@ function ConfirmModal({ cliente, onConfirm, onCancel }) {
 
 // ── Seção principal ───────────────────────────────────────────────────────────
 export default function SistemaSection() {
-  const { clientes, loading, error, online, carregar, cadastrar, atualizar, excluir } = useClientes();
+  const { token } = useAuth();
+  const { clientes, loading, error, online, carregar, cadastrar, atualizar, excluir } = useClientes(token);
   const [modalAberto, setModalAberto] = useState(false);
   const [clienteEditando, setClienteEditando] = useState(null);
   const [clienteExcluindo, setClienteExcluindo] = useState(null);
@@ -200,9 +202,9 @@ export default function SistemaSection() {
         {/* Stats cards */}
         <div className="sistema-stats">
           {[
-            { label: 'Clientes cadastrados', value: loading ? '—' : clientes.length, icon: '👤' },
-            { label: 'Total de rendimentos', value: loading ? '—' : (clientes.reduce((s,c) => s + (c.rendimentos?.length ?? 0), 0)), icon: '💼' },
-            { label: 'Renda total na base', value: loading ? '—' : fmtMoeda(totalRendimentos), icon: '💰' },
+            { label: 'Clientes cadastrados', value: loading ? '—' : clientes.length },
+            { label: 'Total de rendimentos', value: loading ? '—' : (clientes.reduce((s,c) => s + (c.rendimentos?.length ?? 0), 0)) },
+            { label: 'Renda total na base', value: loading ? '—' : fmtMoeda(totalRendimentos) },
           ].map((s, i) => (
             <motion.div
               key={s.label}
@@ -212,7 +214,7 @@ export default function SistemaSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
             >
-              <span className="sistema-stat-icon">{s.icon}</span>
+              <span className="sistema-stat-num">{String(i + 1).padStart(2, '0')}</span>
               <span className="sistema-stat-value">{s.value}</span>
               <span className="sistema-stat-label">{s.label}</span>
             </motion.div>
@@ -334,8 +336,8 @@ export default function SistemaSection() {
         {!loading && online && (
           <p className="sistema-table-foot">
             {clientesFiltrados.length} de {clientes.length} cliente{clientes.length !== 1 ? 's' : ''} ·{' '}
-            <a href="http://localhost:8082" target="_blank" rel="noreferrer" className="sistema-link">
-              Abrir sistema legado
+            <a href="#sistema" className="sistema-link">
+              API: localhost:8082
             </a>
           </p>
         )}
