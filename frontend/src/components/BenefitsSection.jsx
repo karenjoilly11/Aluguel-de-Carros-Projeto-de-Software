@@ -45,7 +45,7 @@ export default function BenefitsSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
         >
-          <span className="section-tag">Por que a DriveElite</span>
+          <span className="section-tag">Por que a Spirit Motors</span>
           <h2 className="section-title">
             O que nos torna <span className="accent-text">diferentes</span>
           </h2>

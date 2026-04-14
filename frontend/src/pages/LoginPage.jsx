@@ -34,7 +34,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="login-logo">
           <span className="navbar-logo-mark" style={{ width: 34, height: 34, fontSize: 13, borderRadius: 9 }}>DE</span>
-          <span>DriveElite</span>
+          <span>Spirit Motors</span>
         </div>
 
         <h1 className="login-title">Acesso ao Sistema</h1>

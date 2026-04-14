@@ -30,7 +30,7 @@ export default function DashboardPage() {
       <aside className={`dash-sidebar${sidebarOpen ? ' dash-sidebar--open' : ''}`}>
         <div className="dash-sidebar-logo">
           <span className="navbar-logo-mark" style={{ width: 26, height: 26, fontSize: 11, borderRadius: 7, flexShrink: 0 }}>DE</span>
-          <span>DriveElite</span>
+          <span>Spirit Motors</span>
         </div>
 
         <nav className="dash-nav">

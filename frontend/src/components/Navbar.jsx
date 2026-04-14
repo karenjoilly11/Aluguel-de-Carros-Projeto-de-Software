@@ -43,7 +43,7 @@ const Navbar = memo(function Navbar() {
       <div className="navbar-inner">
         <a href="#hero" className="navbar-logo">
           <span className="navbar-logo-mark">DE</span>
-          <span>DriveElite</span>
+          <span>Spirit Motors</span>
         </a>
 
         <ul className="navbar-links">

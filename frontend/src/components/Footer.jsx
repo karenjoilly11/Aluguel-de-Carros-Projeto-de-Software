@@ -10,12 +10,12 @@ export default function Footer() {
               <path d="M2 14l4-8 3 5 3-3 3 6H2z" fill="#2B4CFF"/>
               <circle cx="17" cy="6" r="3" fill="#2B4CFF" opacity="0.6"/>
             </svg>
-            <span style={{ color: '#fff', fontWeight: 700 }}>DriveElite</span>
+            <span style={{ color: '#fff', fontWeight: 700 }}>Spirit Motors</span>
           </span>
           <p className="footer-tagline">Alto padrão em cada quilômetro.</p>
         </div>
         <p className="footer-copy">
-          © {YEAR} DriveElite · Projeto de Software · PUC Minas
+          © {YEAR} Spirit Motors · Projeto de Software · PUC Minas
         </p>
       </div>
     </footer>
