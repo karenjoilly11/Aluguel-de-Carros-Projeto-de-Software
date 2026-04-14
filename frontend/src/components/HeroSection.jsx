@@ -8,6 +8,7 @@ export default function HeroSection() {
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end start'],
+    layoutEffect: false,
   });
 
   const uiOpacity    = useTransform(scrollYProgress, [0, 0.05, 0.35], [1, 1, 0]);

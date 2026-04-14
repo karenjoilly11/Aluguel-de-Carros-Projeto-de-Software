@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useClientes } from '../hooks/useClientes';
 import { useAuth } from '../context/AuthContext';
@@ -33,7 +33,7 @@ function ApiBadge({ online, loading }) {
 }
 
 // ── Linha da tabela ───────────────────────────────────────────────────────────
-function ClienteRow({ cliente, onEditar, onExcluir, index }) {
+const ClienteRow = memo(function ClienteRow({ cliente, onEditar, onExcluir, index }) {
   const totalRend = useMemo(
     () => (cliente.rendimentos ?? []).reduce((s, r) => s + Number(r.valor ?? 0), 0),
     [cliente.rendimentos],
@@ -75,7 +75,7 @@ function ClienteRow({ cliente, onEditar, onExcluir, index }) {
       </td>
     </motion.tr>
   );
-}
+});
 
 // ── Modal de confirmação de exclusão ─────────────────────────────────────────
 function ConfirmModal({ cliente, onConfirm, onCancel }) {
@@ -134,36 +134,48 @@ export default function SistemaSection() {
   const [clienteEditando, setClienteEditando] = useState(null);
   const [clienteExcluindo, setClienteExcluindo] = useState(null);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [toast, setToast] = useState(null);
+  const toastTimerRef = useRef(null);
 
-  function showToast(msg, tipo = 'success') {
+  // Debounce de 250ms no campo de busca
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 250);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const showToast = useCallback((msg, tipo = 'success') => {
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     setToast({ msg, tipo });
-    setTimeout(() => setToast(null), 3500);
-  }
+    toastTimerRef.current = setTimeout(() => setToast(null), 3500);
+  }, []);
+
+  // Limpa timer ao desmontar
+  useEffect(() => () => { if (toastTimerRef.current) clearTimeout(toastTimerRef.current); }, []);
 
   const clientesFiltrados = useMemo(() => {
-    const q = search.toLowerCase();
+    const q = debouncedSearch.toLowerCase();
     return clientes.filter(
       (c) => c.nome?.toLowerCase().includes(q) || c.cpf?.includes(q) || c.rg?.toLowerCase().includes(q),
     );
-  }, [clientes, search]);
+  }, [clientes, debouncedSearch]);
 
   const totalRendimentos = useMemo(
     () => clientes.reduce((s, c) => s + (c.rendimentos ?? []).reduce((rs, r) => rs + Number(r.valor ?? 0), 0), 0),
     [clientes],
   );
 
-  function abrirNovo() {
+  const abrirNovo = useCallback(() => {
     setClienteEditando(null);
     setModalAberto(true);
-  }
+  }, []);
 
-  function abrirEditar(cliente) {
+  const abrirEditar = useCallback((cliente) => {
     setClienteEditando(cliente);
     setModalAberto(true);
-  }
+  }, []);
 
-  async function handleSave(payload) {
+  const handleSave = useCallback(async (payload) => {
     if (clienteEditando) {
       await atualizar(clienteEditando.id, payload);
       showToast('Cliente atualizado com sucesso!');
@@ -171,13 +183,13 @@ export default function SistemaSection() {
       await cadastrar(payload);
       showToast('Cliente cadastrado com sucesso!');
     }
-  }
+  }, [clienteEditando, atualizar, cadastrar, showToast]);
 
-  async function handleExcluir() {
+  const handleExcluir = useCallback(async () => {
     await excluir(clienteExcluindo.id);
     showToast(`${clienteExcluindo.nome} removido.`, 'danger');
     setClienteExcluindo(null);
-  }
+  }, [clienteExcluindo, excluir, showToast]);
 
   return (
     <section className="sistema-section" id="sistema">

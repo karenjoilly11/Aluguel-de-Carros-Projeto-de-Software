@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useCallback, memo } from 'react';
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 
 const FLEET = [
@@ -8,7 +8,6 @@ const FLEET = [
     price: 'R$ 890',
     img: '/carros/audi rs6 fosco.jpg',
     specs: ['4.0 V8 Biturbo', '630 cv', '0–100 em 3,4s'],
-    color: '#2B4CFF',
   },
   {
     name: 'Lamborghini Huracán',
@@ -16,7 +15,6 @@ const FLEET = [
     price: 'R$ 2.400',
     img: '/carros/huracan verde.jpg',
     specs: ['5.2 V10', '640 cv', '0–100 em 2,9s'],
-    color: '#00FF88',
   },
   {
     name: 'Lamborghini Urus',
@@ -24,7 +22,6 @@ const FLEET = [
     price: 'R$ 1.600',
     img: '/carros/lambo italy.webp',
     specs: ['4.0 V8 Twin-Turbo', '650 cv', '0–100 em 3,6s'],
-    color: '#FF6B2B',
   },
   {
     name: 'Mercedes AMG',
@@ -32,11 +29,10 @@ const FLEET = [
     price: 'R$ 1.100',
     img: '/carros/mercedes 1.jpg',
     specs: ['4.0 V8 Biturbo', '510 cv', '0–100 em 3,7s'],
-    color: '#C0C0C0',
   },
 ];
 
-function FleetCard({ car, index }) {
+const FleetCard = memo(function FleetCard({ car, index }) {
   const cardRef = useRef(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -50,15 +46,24 @@ function FleetCard({ car, index }) {
   const rotateXSpring = useSpring(rotateX, { stiffness: 120, damping: 28 });
   const rotateYSpring = useSpring(rotateY, { stiffness: 120, damping: 28 });
 
-  const handleMouseMove = (e) => {
-    const rect = cardRef.current.getBoundingClientRect();
-    x.set(e.clientX - rect.left - rect.width / 2);
-    y.set(e.clientY - rect.top - rect.height / 2);
-  };
-  const handleMouseLeave = () => {
+  const rafRef = useRef(null);
+  const handleMouseMove = useCallback((e) => {
+    if (rafRef.current) return;
+    rafRef.current = requestAnimationFrame(() => {
+      const rect = cardRef.current?.getBoundingClientRect();
+      if (rect) {
+        x.set(e.clientX - rect.left - rect.width / 2);
+        y.set(e.clientY - rect.top - rect.height / 2);
+      }
+      rafRef.current = null;
+    });
+  }, [x, y]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
     x.set(0);
     y.set(0);
-  };
+  }, [x, y]);
 
   return (
     <motion.div
@@ -88,13 +93,13 @@ function FleetCard({ car, index }) {
       {/* Imagem */}
       <div className="fleet-card-img-wrapper">
         <img src={car.img} alt={car.name} className="fleet-card-img" loading="lazy" />
-        <div className="fleet-card-img-overlay" style={{ '--accent': car.color }} />
+        <div className="fleet-card-img-overlay" />
       </div>
 
       {/* Info */}
       <div className="fleet-card-body" style={{ transform: 'translateZ(20px)' }}>
         <div className="fleet-card-top">
-          <span className="fleet-card-category" style={{ color: car.color }}>
+          <span className="fleet-card-category">
             {car.category}
           </span>
           <span className="fleet-card-price">
@@ -106,7 +111,7 @@ function FleetCard({ car, index }) {
         <ul className="fleet-card-specs">
           {car.specs.map((s) => (
             <li key={s}>
-              <span className="fleet-spec-dot" style={{ background: car.color }} />
+              <span className="fleet-spec-dot" />
               {s}
             </li>
           ))}
@@ -114,7 +119,6 @@ function FleetCard({ car, index }) {
 
         <button
           className="fleet-card-btn"
-          style={{ '--accent': car.color }}
           onClick={() => document.getElementById('reservar')?.scrollIntoView({ behavior: 'smooth' })}
         >
           Reservar
@@ -122,7 +126,7 @@ function FleetCard({ car, index }) {
       </div>
     </motion.div>
   );
-}
+});
 
 export default function FleetSection() {
   return (

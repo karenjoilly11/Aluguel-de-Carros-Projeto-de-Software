@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const VINCULOS = ['CLT', 'PJ', 'Autônomo', 'Servidor', 'Outro'];
@@ -135,7 +135,7 @@ export default function ClienteModal({ isOpen, onClose, onSave, clienteParaEdita
     return () => document.removeEventListener('keydown', handler);
   }, [isOpen, onClose]);
 
-  const setField = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  const setField = useCallback((k, v) => setForm((f) => ({ ...f, [k]: v })), []);
 
   // Validação local
   function validate() {

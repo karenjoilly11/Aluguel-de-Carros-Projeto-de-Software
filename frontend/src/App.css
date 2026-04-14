@@ -320,13 +320,14 @@ ul { list-style: none; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Afasta a câmera do carro para o lado direito, liberando o lado esquerdo nativo */
   object-position: 75% center;
   z-index: 0;
   pointer-events: none;
-  /* Força o browser a alocar layer dedicado para o vídeo — evita que
-     repaints do DOM acima afetem a decodificação */
+  /* Layer dedicada na GPU — decodificação do vídeo isolada do DOM */
   transform: translateZ(0);
+  will-change: transform;
+  contain: strict;
+  backface-visibility: hidden;
 }
 
 /* Overlay escuro para contraste do texto */
@@ -1095,6 +1096,7 @@ ul { list-style: none; }
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  color: var(--blue);
 }
 .fleet-card-price {
   font-size: 18px;
@@ -1134,12 +1136,13 @@ ul { list-style: none; }
   height: 5px;
   border-radius: 50%;
   flex-shrink: 0;
+  background: var(--blue);
 }
 
 .fleet-card-btn {
   width: 100%;
   padding: 11px;
-  background: var(--accent, var(--blue));
+  background: var(--blue);
   opacity: 0.9;
   color: #fff;
   font-size: 14px;

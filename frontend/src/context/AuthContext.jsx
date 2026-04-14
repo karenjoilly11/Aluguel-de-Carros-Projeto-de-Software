@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 const AuthContext = createContext(null);
 
@@ -36,11 +36,15 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
-  // Token para uso nos headers das requisições autenticadas
-  const token = user?.token ?? null;
+  const value = useMemo(() => ({
+    user,
+    token: user?.token ?? null,
+    login,
+    logout,
+  }), [user, login, logout]);
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

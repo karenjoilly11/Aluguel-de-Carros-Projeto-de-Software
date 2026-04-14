@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useState, memo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const PartsScene = lazy(() => import('./PartsScene'));
@@ -96,11 +96,11 @@ const SERVICES = [
 ];
 
 // ── Card de serviço ──────────────────────────────────────────────────────────
-function ServiceCard({ service, index, isActive, onClick }) {
+const ServiceCard = memo(function ServiceCard({ service, index, isActive, onClick }) {
   return (
     <motion.button
       className={`service-card${isActive ? ' service-card--active' : ''}`}
-      onClick={onClick}
+      onClick={() => onClick(service.id)}
       initial={{ opacity: 0, x: -24 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: '-60px' }}
@@ -147,12 +147,13 @@ function ServiceCard({ service, index, isActive, onClick }) {
       </div>
     </motion.button>
   );
-}
+});
 
 // ── Seção principal ──────────────────────────────────────────────────────────
 export default function ServicesSection() {
   const [activeId, setActiveId] = useState('curta');
   const activeService = SERVICES.find((s) => s.id === activeId);
+  const handleClick = useCallback((id) => setActiveId(id), []);
 
   return (
     <section className="services-section" id="servicos">
@@ -187,7 +188,7 @@ export default function ServicesSection() {
                 service={s}
                 index={i}
                 isActive={activeId === s.id}
-                onClick={() => setActiveId(s.id)}
+                onClick={handleClick}
               />
             ))}
           </div>

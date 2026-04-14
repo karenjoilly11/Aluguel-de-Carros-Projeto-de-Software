@@ -1,3 +1,5 @@
+const YEAR = new Date().getFullYear();
+
 export default function Footer() {
   return (
     <footer className="footer">
@@ -13,7 +15,7 @@ export default function Footer() {
           <p className="footer-tagline">Alto padrão em cada quilômetro.</p>
         </div>
         <p className="footer-copy">
-          © {new Date().getFullYear()} DriveElite · Projeto de Software · PUC Minas
+          © {YEAR} DriveElite · Projeto de Software · PUC Minas
         </p>
       </div>
     </footer>

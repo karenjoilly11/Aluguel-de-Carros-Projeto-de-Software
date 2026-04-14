@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const NAV_LINKS = [
@@ -8,12 +8,27 @@ const NAV_LINKS = [
   { label: 'Contato', href: '#reservar' },
 ];
 
-export default function Navbar() {
+const CURRENT_YEAR = new Date().getFullYear();
+export { CURRENT_YEAR };
+
+const Navbar = memo(function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const toggleMenu = useCallback(() => setMenuOpen((o) => !o), []);
+  const closeMenu  = useCallback(() => setMenuOpen(false), []);
+
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 60);
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 60);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -45,7 +60,7 @@ export default function Navbar() {
 
         <button
           className={`navbar-hamburger${menuOpen ? ' open' : ''}`}
-          onClick={() => setMenuOpen(!menuOpen)}
+          onClick={toggleMenu}
           aria-label="Menu"
         >
           <span /><span /><span />
@@ -66,12 +81,12 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className="navbar-mobile-link"
-                onClick={() => setMenuOpen(false)}
+                onClick={closeMenu}
               >
                 {link.label}
               </a>
             ))}
-            <a href="/login" className="navbar-mobile-link" onClick={() => setMenuOpen(false)}>
+            <a href="/login" className="navbar-mobile-link" onClick={closeMenu}>
               Entrar
             </a>
           </motion.div>
@@ -79,4 +94,6 @@ export default function Navbar() {
       </AnimatePresence>
     </motion.nav>
   );
-}
+});
+
+export default Navbar;
