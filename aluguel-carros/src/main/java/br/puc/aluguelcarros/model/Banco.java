@@ -13,6 +13,4 @@ public class Banco extends Agente {
         super();
     }
     
-    // Opcional: Se quiser adicionar o código do banco (Ex: 001 para BB)
-    // private String codigoCompensacao;
 }
