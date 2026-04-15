@@ -1,13 +1,14 @@
 package br.puc.aluguelcarros.dto;
 
-import io.micronaut.core.annotation.Introspected;
+import io.micronaut.serde.annotation.Serdeable;
 
-@Introspected
+@Serdeable
 public record AutomovelResponseDTO(
     String matricula,
     String marca,
     String modelo,
     Integer ano,
     String placa,
+    Double valorDiaria,
     boolean disponivel
 ) {}

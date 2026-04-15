@@ -6,8 +6,7 @@ import io.micronaut.core.annotation.Introspected;
 @Introspected
 @Entity
 @Table(name = "agentes")
-@Inheritance(strategy = InheritanceType.JOINED) // Cria tabelas separadas para Empresa e Banco vinculadas pelo ID
-public class Agente {
+public class Agente extends Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

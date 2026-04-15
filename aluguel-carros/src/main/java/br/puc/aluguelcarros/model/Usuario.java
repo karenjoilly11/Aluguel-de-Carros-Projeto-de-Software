@@ -9,10 +9,8 @@ import jakarta.validation.constraints.NotBlank;
  * A senha é sempre armazenada como hash BCrypt — nunca em texto puro.
  */
 @Entity
-@Table(name = "usuario",
-       uniqueConstraints = {
-           @UniqueConstraint(name = "uk_usuario_email", columnNames = "email")
-       })
+@Table(name = "usuario")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Usuario {
 
     @Id
@@ -51,4 +49,8 @@ public class Usuario {
     public void setNome(String n) { this.nome = n; }
     public String getRole()       { return role; }
     public void setRole(String r) { this.role = r; }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

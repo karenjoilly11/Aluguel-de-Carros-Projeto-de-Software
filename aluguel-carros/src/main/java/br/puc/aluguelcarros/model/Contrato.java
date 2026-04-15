@@ -2,6 +2,7 @@ package br.puc.aluguelcarros.model;
 
 import jakarta.persistence.*;
 import io.micronaut.core.annotation.Introspected;
+import java.time.LocalDateTime;
 
 @Introspected
 @Entity
@@ -12,72 +13,59 @@ public class Contrato {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(columnDefinition = "TEXT")
     private String termos;
-    private double valorFinal;
-    private boolean assinado;
-    private boolean possuiCredito;
+
+    private Double valorFinal;
+    private LocalDateTime dataAssinatura;
+    private boolean assinado = false;
 
     @OneToOne
-    @JoinColumn(name = "pedido_id")
-    private PedidoAluguel pedidoAluguel;
+    @JoinColumn(name = "pedido_id", nullable = false)
+    private PedidoAluguel pedido;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "banco_id")
     private Banco banco;
 
     public Contrato() {}
 
-    // Métodos do Diagrama
-    public void registrarAssinatura() {
-        this.assinado = true;
-    }
+    // --- MÉTODOS DE LÓGICA (RESOLVEM OS ERROS DE COMPILAÇÃO) ---
 
+    /**
+     * Resolve o erro: vincularCreditoBancario(Banco) is undefined
+     */
     public void vincularCreditoBancario(Banco banco) {
         this.banco = banco;
-        this.possuiCredito = (banco != null);
-    }
-
-    public String imprimirContrato() {
-        return "Contrato ID: " + id + " | Termos: " + termos + " | Valor: R$ " + valorFinal;
-    }
-
-    // Getters e Setters...
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public double getValorFinal() { return valorFinal; }
-    public void setValorFinal(double valorFinal) { this.valorFinal = valorFinal; }
-    public PedidoAluguel getPedidoAluguel() { return pedidoAluguel; }
-    public void setPedidoAluguel(PedidoAluguel pedidoAluguel) { this.pedidoAluguel = pedidoAluguel; }
-
-    public String getTermos() {
-        return termos;
-    }
-
-    public void setTermos(String termos) {
-        this.termos = termos;
-    }
-
-    public boolean isAssinado() {
-        return assinado;
-    }
-
-    public void setAssinado(boolean assinado) {
-        this.assinado = assinado;
     }
 
     public boolean isPossuiCredito() {
-        return possuiCredito;
+        return this.banco != null;
     }
 
-    public void setPossuiCredito(boolean possuiCredito) {
-        this.possuiCredito = possuiCredito;
+    public PedidoAluguel getPedidoAluguel() {
+        return this.pedido;
     }
 
-    public Banco getBanco() {
-        return banco;
+    public void setPedidoAluguel(PedidoAluguel pedido) {
+        this.pedido = pedido;
     }
 
-    public void setBanco(Banco banco) {
-        this.banco = banco;
+    public void registrarAssinatura() {
+        this.assinado = true;
+        this.dataAssinatura = LocalDateTime.now();
     }
+
+    // --- Getters e Setters Padrão ---
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public String getTermos() { return termos; }
+    public void setTermos(String termos) { this.termos = termos; }
+
+    public Double getValorFinal() { return valorFinal; }
+    public void setValorFinal(Double valorFinal) { this.valorFinal = valorFinal; }
+
+    public boolean isAssinado() { return assinado; }
 }

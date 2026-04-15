@@ -1,12 +1,12 @@
 package br.puc.aluguelcarros.dto;
 
-import io.micronaut.core.annotation.Introspected;
+import io.micronaut.serde.annotation.Serdeable;
 
-@Introspected
+@Serdeable
 public record ContratoResponseDTO(
     Long id,
     String termos,
-    double valorFinal,
+    Double valorFinal,
     boolean assinado,
     boolean possuiCredito,
     Long pedidoId

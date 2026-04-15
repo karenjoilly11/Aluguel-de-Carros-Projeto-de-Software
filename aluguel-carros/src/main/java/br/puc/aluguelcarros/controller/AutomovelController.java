@@ -6,6 +6,7 @@ import br.puc.aluguelcarros.model.Automovel;
 import br.puc.aluguelcarros.service.AutomovelService;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.HttpStatus;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,19 +22,17 @@ public class AutomovelController {
 
     @Post
     @Status(HttpStatus.CREATED)
-    public AutomovelResponseDTO cadastrar(@Body AutomovelRequestDTO dto) {
-        // Converte DTO para Entidade
+    public AutomovelResponseDTO cadastrar(@Body @Valid AutomovelRequestDTO dto) {
         Automovel novoCarro = new Automovel();
         novoCarro.setMatricula(dto.matricula());
         novoCarro.setMarca(dto.marca());
         novoCarro.setModelo(dto.modelo());
         novoCarro.setAno(dto.ano());
         novoCarro.setPlaca(dto.placa());
+        novoCarro.setValorDiaria(dto.valorDiaria()); // Mapeando o valor da diária
         novoCarro.setDisponivel(dto.disponivel());
 
         Automovel salvo = service.salvar(novoCarro);
-
-        // Retorna o ResponseDTO
         return mapperToResponse(salvo);
     }
 
@@ -44,7 +43,13 @@ public class AutomovelController {
                 .collect(Collectors.toList());
     }
 
-    // Helper method para mapeamento
+    @Get("/{matricula}")
+    public AutomovelResponseDTO buscar(@PathVariable String matricula) {
+        return service.buscarPorMatricula(matricula)
+                .map(this::mapperToResponse)
+                .orElseThrow(); // O Micronaut converterá para 404 automaticamente
+    }
+
     private AutomovelResponseDTO mapperToResponse(Automovel carro) {
         return new AutomovelResponseDTO(
             carro.getMatricula(),
@@ -52,6 +57,7 @@ public class AutomovelController {
             carro.getModelo(),
             carro.getAno(),
             carro.getPlaca(),
+            carro.getValorDiaria(),
             carro.isDisponivel()
         );
     }

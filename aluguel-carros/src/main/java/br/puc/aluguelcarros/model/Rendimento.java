@@ -1,68 +1,43 @@
 package br.puc.aluguelcarros.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
-
 import java.math.BigDecimal;
 
-/**
- * Representa um rendimento mensal do cliente vinculado a uma
- * entidade empregadora.
- *
- * Regra de negócio: máximo de 3 rendimentos por cliente.
- * Essa regra é validada na camada de serviço (ClienteService).
- */
 @Entity
-@Table(name = "rendimento")
+@Table(name = "rendimentos")
 public class Rendimento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Valor do rendimento é obrigatório")
-    @DecimalMin(value = "0.01", message = "Rendimento deve ser maior que zero")
-    @Column(nullable = false, precision = 15, scale = 2)
+    @NotNull
+    @Column(nullable = false)
     private BigDecimal valor;
 
-    /** Tipo de vínculo: CLT, PJ, Autônomo, etc. */
-    @Column
-    private String tipoVinculo;
+    @Column(name = "entidade_empregadora")
+    private String entidadeEmpregadora;
 
-    // ── Relacionamento: N rendimentos → 1 cliente ────────────────────
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cliente_id", nullable = false)
+    @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
-    // ── Relacionamento: N rendimentos → 1 empregadora ─────────────────
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "entidade_empregadora_id")
-    private EntidadeEmpregadora entidadeEmpregadora;
-
-    // ── Construtores ─────────────────────────────────────────────────
     public Rendimento() {}
 
-    public Rendimento(BigDecimal valor, String tipoVinculo,
-                      Cliente cliente, EntidadeEmpregadora entidadeEmpregadora) {
+    public Rendimento(BigDecimal valor, String entidadeEmpregadora, Cliente cliente) {
         this.valor = valor;
-        this.tipoVinculo = tipoVinculo;
-        this.cliente = cliente;
         this.entidadeEmpregadora = entidadeEmpregadora;
+        this.cliente = cliente;
     }
 
-    // ── Getters / Setters ─────────────────────────────────────────────
+    // Getters e Setters
     public Long getId() { return id; }
-
+    public void setId(Long id) { this.id = id; }
     public BigDecimal getValor() { return valor; }
     public void setValor(BigDecimal valor) { this.valor = valor; }
-
-    public String getTipoVinculo() { return tipoVinculo; }
-    public void setTipoVinculo(String tipoVinculo) { this.tipoVinculo = tipoVinculo; }
-
+    public String getEntidadeEmpregadora() { return entidadeEmpregadora; }
+    public void setEntidadeEmpregadora(String entidadeEmpregadora) { this.entidadeEmpregadora = entidadeEmpregadora; }
     public Cliente getCliente() { return cliente; }
     public void setCliente(Cliente cliente) { this.cliente = cliente; }
-
-    public EntidadeEmpregadora getEntidadeEmpregadora() { return entidadeEmpregadora; }
-    public void setEntidadeEmpregadora(EntidadeEmpregadora e) { this.entidadeEmpregadora = e; }
 }
